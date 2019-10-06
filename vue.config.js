@@ -1,7 +1,7 @@
 const MonacoEditorPlugin = require('monaco-editor-webpack-plugin')
 
 module.exports = {
-    publicPath: './',
+    publicPath: '/contest/',
     configureWebpack: {
         plugins: [
             new MonacoEditorPlugin({
