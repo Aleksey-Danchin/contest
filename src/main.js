@@ -12,7 +12,11 @@ import router from './router'
 Vue.use(BootstrapVue)
 
 Vue.config.productionTip = false
-store.dispatch('loadContest', "https://gist.githubusercontent.com/Aleksey-Danchin/2d2287db2b10e6412d40edc9449027ea/raw/contest.json")
+
+store.dispatch(
+  'loadContest',
+  "https://gist.githubusercontent.com/Aleksey-Danchin/2d2287db2b10e6412d40edc9449027ea/raw/contest.json"
+)
 
 new Vue({
   store,

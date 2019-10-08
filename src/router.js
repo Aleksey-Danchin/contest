@@ -8,13 +8,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
       component: () => import('@/views/Home')
     },
     {
       path: '/:taskname',
-      name: 'home',
-      component: () => import('@/views/Home')
+      component: () => import('@/views/Trainer')
     }
   ]
 })

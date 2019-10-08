@@ -1,126 +1,17 @@
 <template lang="pug">
-  div
-    b-badge(v-for="{ name } of problems" variant="primary" :to="`/${name}`") {{ name }}
-    b-card(v-if="problem")
-      #mocha
-      Markdown(:source="problem.description")
-      b-table(:items="problem.tests" :fields="fields" v-if="showResultTable")
-      b-button(variant="success" @click="run()" v-if="!showResultTable") Запустить
-      b-button(variant="warning" v-else @click="showResultTable = false") Скрыть
-      hr
-      MonacoEditor.editor(v-model="problem.code" language="javascript")
+    b-container(style="margin-top: 20px")
+        b-jumbotron
+            template(v-slot:header) Contest (test mode*)
+            template(v-slot:lead) Контест тренажер для изучающих <a href="https://google.com/search?q=javascript" target="_blank">JavaScript</a>.
+            hr
+            p Решай простые и сложные задачи по JavaScript прямо в браузаре. Не нужно заморачиваться с редактором кода, ведь он уже встроен в наш котест сервис. Просто выбери задачу и пиши код. Запуска свой код и смотри как он справится с заранее подготовленными тестами.
+            ul Итого:
+                li Задачи разного уровня
+                li Встроенный редактор кода
+                li Готовая система автоматического тестирования
+            p Если у тебя возникли предложения по улучшению сервиса, или у тебя есть хорошая идея для новой задачи, то смело пиши <a href="https://vk.com/aleksey_danchin" target="_blank">мне</a>.
+            hr
+            b-button(variant="primary" href="/start") Начать писать код
+            hr
+            p * режим тестирования - возможно неожиданное поведение.
 </template>
-
-<script>
-import MonacoEditor from 'vue-monaco'
-import Markdown from '@/components/Markdown'
-
-export default {
-  components: {
-    MonacoEditor,
-    Markdown
-  },
-
-  data() {
-    const data = {
-      showResultTable: false,
-      fields: [{
-          key: 'testCode',
-          label: 'Тестовый код'
-        },
-        {
-          key: 'expect',
-          label: 'Ожидаемый ответ'
-        },
-        {
-          key: 'result',
-          label: 'Ответ вашей программы'
-        },
-        {
-          key: 'time',
-          label: 'Время (мс)'
-        },
-        {
-          key: 'comment',
-          label: 'Комментарий'
-        }
-      ]
-    }
-
-    return data
-  },
-
-  computed: {
-    problems () {
-      return this.$store.state.problems || []
-    },
-
-    problem () {
-      const taskname = this.$route.params.taskname
-
-      if (!taskname) {
-        return null
-      }
-
-      let problem = null
-
-      for (const item of this.$store.state.problems) {
-        if (item.name === taskname) {
-          problem = JSON.parse(JSON.stringify(item))
-          break
-        }
-      }
-
-      if (problem) {
-        for (const test of problem.tests) {
-          Object.assign(test, {
-            result: undefined,
-            success: null,
-            comment: '',
-            time: 0
-          })
-        }
-      }
-
-      return problem
-    }
-  },
-
-  methods: {
-    run() {
-      this.showResultTable = true
-
-      for (const test of this.problem.tests) {
-        test.result = undefined
-        test.success = null
-        test.comment = ''
-        test.time = 0
-
-        try {
-          let startMomemnt = Date.now()
-
-          test.result = eval(`;(function () { ;${this.problem.code}; return (${test.testCode}) })();`)
-          test.success = JSON.stringify(test.result) === JSON.stringify(test.expect)
-          test.comment = test.success ? 'Правильно' : 'Не правильно'
-          test._rowVariant = test.success ? 'success' : 'danger'
-
-          test.result = JSON.stringify(test.result)
-          test.time = Date.now() - startMomemnt
-        } catch (err) {
-          test.success = false
-          test.comment = err.message
-          test._rowVariant = 'danger'
-        }
-      }
-    }
-  }
-}
-
-</script>
-
-<style>
-.editor {
-  min-height: 300px;
-  height: 100%;
-}
-</style>

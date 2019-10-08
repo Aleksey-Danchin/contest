@@ -16,9 +16,16 @@ export default new Vuex.Store({
 
   actions: {
     loadContest ({ commit }, address) {
-      fetch(address)
-        .then(x => x.json())
-        .then(x => commit('update', x))
+      if (process.env.NODE_ENV === 'development') {
+        ;(() => commit('update', require('@/contestData')))();
+      }
+
+      else {
+        fetch(address)
+          .then(x => x.json())
+          .then(x => commit('update', x))
+      }
+
     }
   }
 })
